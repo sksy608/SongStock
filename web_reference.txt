@@ -1,0 +1,39 @@
+# Company company profile
+# https://www.set.or.th/set/companyprofile.do?
+#  symbol=PTT&ssoPageId=4&language=en&country=US
+
+# Company Highlight
+# https://www.set.or.th/set/companyhighlight.do?
+#  symbol=PTT&ssoPageId=5&language=en&country=US
+
+# Company Holder
+# https://www.set.or.th/set/companyholder.do?
+#  symbol=PTT&ssoPageId=6&language=en&country=US
+
+# Company Rights
+# https://www.set.or.th/set/companyrights.do?
+#  symbol=PTT&ssoPageId=7&language=en&country=US
+
+# Company News
+# https://www.set.or.th/set/companynews.do?
+#  symbol=PTT&ssoPageId=8&language=en&country=US
+
+# Stock Quatation
+# https://marketdata.set.or.th/mkt/stockquotation.do?
+#  symbol=PTT&ssoPageId=1&language=en&country=US
+
+# Historical Trading
+# https://www.set.or.th/set/historicaltrading.do?
+#  symbol=PTT&ssoPageId=2&language=en&country=US
+
+# Company Finance Balance
+# https://www.set.or.th/set/companyfinance.do?
+#  symbol=PTT&language=en&country=US&type=balance
+
+# Company Finance Income
+# https://www.set.or.th/set/companyfinance.do?
+#  type=income&symbol=PTT&language=en&country=US
+
+# Company Finance Cashflow
+# https://www.set.or.th/set/companyfinance.do?
+#  type=cashflow&symbol=PTT&language=en&country=US

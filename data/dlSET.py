@@ -1,0 +1,102 @@
+###############################################################################
+# dlSet.py
+# 2018-11-11
+# from
+#  https://www.patanasongsivilai.com/blog/stock-thai-python/
+#   ?fbclid=IwAR3t4rMoPcSHlon5NNqLdLFYEM5xvvtfF7igHZ3PRSt2PbtMkXtkxo4n4kg
+# Retrieve stock data from set.or.th by web scraping
+# Don't Use it in real-time mode, because it will like DOS Attack
+##############################################################################
+
+import urllib2
+from bs4 import BeautifulSoup
+import numpy as np
+import pandas as pd
+from os.path import join, exists
+from os import  remove, makedirs
+
+# Example url
+# https://www.set.or.th/set/historicaltrading.do?symbol=BBL&page=2
+#  &language=en&country=US&type=trading
+def getTableData(symbol, page=0):
+    if page > 2:
+        page = 2 # limit at 3
+
+    # url_string = "https://www.set.or.th/set/historicaltrading.do?symbol={0}".format(symbol) + "&page={0}&language=en&country=US&type=trading".format(page-1)
+    url_string = "https://www.set.or.th/set/historicaltrading.do?"
+    url_string += "symbol={0}".format(symbol)
+    url_string += "&page={0}&language=en&country=US&"
+    url_string += "type=trading".format(page-1)
+
+    page = urllib2.urlopen(urllib2.Request(url_string)).read()
+    soup = BeautifulSoup(page, 'lxml')
+    table_element =soup.find('table', class_='table table-hover table-info')
+    return table_element, url_string
+
+def createDataFrame(table_element):
+    row_list =[]
+    head_list = []
+
+    if table_element is None:
+        return None
+
+    tr_list = table_element.findAll('tr')
+
+    for tr in tr_list:
+        th_list = tr.findAll('th')
+        if th_list is not None:
+            for th in th_list:
+                head_list.append(th.find(text=True))
+
+        td_list = tr.findAll('td')
+
+        for td in td_list:
+            row_list = np.append(row_list, td.find(text=True))
+
+    num_col = len(head_list)
+    total_col = int(len(row_list)/num_col)
+    row_list = np.reshape(row_list, (total_col, num_col) )
+    df=pd.DataFrame(columns = head_list, data = row_list)
+    return df
+
+def create_all_data(symbol, total_page=1):
+    # get stock data from set.or.th web (total page)
+    df = None
+    for p in range(1, total_page+1):
+        table_element, url_string = getTableData(symbol, page=p)
+        print(url_string)
+        df_temp = createDataFrame(table_element)
+        if df is None:
+            df = df_temp
+        else:
+            df = df.append(df_temp)
+    return df
+
+DIR_SEC_CSV = "sec_set_price"
+def writeCSVFile(df, symbol, output_path=DIR_SEC_CSV, include_index = False):
+    csv_file = "{}.csv".format(join(output_path, symbol))
+    df.to_csv(csv_file, index = include_index)
+
+def removeOldFile(symbol, output_path=DIR_SEC_CSV):
+    csv_file = "{}.csv".format(join(output_path, symbol))
+    if exists(output_path) == False:
+        makedirs(output_path)
+    if exists(csv_file):
+        remove(csv_file)
+
+if __name__ == "__main__" :
+    table_element, url_string = getTableData("PTT",1)
+    tr_list = table_element.findAll('tr')
+    #print(tr_list[0:2])
+    for i in tr_list:
+        print i
+
+    # symbol_list = ['SCC', 'BEAUTY']
+    # for symbol in symbol_list:
+    #     df = create_all_data(symbol, total_page = 3)
+    #     print('\n********* %s **********' % symbol)
+    #     print(df.tail())
+    #
+    #     # save csv files (all stock data)
+    #     removeOldFile(symbol) # clear old files
+    #     writeCSVFile(df, symbol)
